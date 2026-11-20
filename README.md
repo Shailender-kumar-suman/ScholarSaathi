@@ -4,7 +4,7 @@
 
 Built for **Innovate India Hackathon 2026** (Round 2) by Shailender Kumar Suman.
 
-**Live demo:** YOUR-LIVE-LINK-HERE
+**Live demo:** https://shailender-kumar-suman.github.io/ScholarSaathi/ 
 
 ## What it does
 - Takes a one-time student profile (course, year, state, gender, category, income, marks, minority and disability status).
