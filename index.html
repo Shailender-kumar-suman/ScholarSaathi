@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ScholarSaathi – Smart Scholarship Finder</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap">
+<style>
+:root{--bg:#f2f5fa;--card:#fff;--ink:#13203b;--mute:#5a6682;--line:#d9e0ec;--brand:#0f766e;--brand-ink:#fff;--warn:#b45309;--warnbg:#fdf0d5;--ok:#0f766e;--okbg:#d9f2ee;--no:#8a3b3b;--nobg:#f6e2e2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1524;--card:#17213a;--ink:#e8edf8;--mute:#9aa7c4;--line:#2a3857;--brand:#2dd4bf;--brand-ink:#06201d;--warn:#f5b85a;--warnbg:#3a2c12;--ok:#5eead4;--okbg:#0f3a36;--no:#f0a5a5;--nobg:#3d1f1f}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Plus Jakarta Sans",system-ui,sans-serif;line-height:1.5}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+h1{font-size:clamp(28px,6vw,44px);line-height:1.1;margin:8px 0 6px;font-weight:800}
+.tag{color:var(--mute);margin:0 0 20px;max-width:56ch}
+.tabs{display:flex;gap:8px;margin:16px 0}
+.tabs button{padding:10px 16px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;font:inherit;font-weight:700;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px}
+.panel h2{margin:0 0 4px;font-size:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-top:12px}
+label{display:block;font-size:13px;font-weight:700;color:var(--mute)}
+input,select{width:100%;margin-top:4px;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.btn{margin-top:14px;padding:11px 18px;border:0;border-radius:10px;background:var(--brand);color:var(--brand-ink);font:inherit;font-weight:700;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 12px}
+.stat{padding:6px 12px;border-radius:999px;background:var(--okbg);color:var(--ok);font-weight:700;font-size:14px}
+.sch{border-left:5px solid var(--line);margin-bottom:12px}
+.sch.ok{border-left-color:var(--ok)} .sch.no{border-left-color:var(--no)}
+.sch h3{margin:0;font-size:18px}
+.meta{color:var(--mute);font-size:14px;margin:2px 0 8px}
+.badge{display:inline-block;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:700}
+.badge.ok{background:var(--okbg);color:var(--ok)} .badge.no{background:var(--nobg);color:var(--no)} .badge.warn{background:var(--warnbg);color:var(--warn)}
+.why{font-size:14px;color:var(--mute);margin:8px 0}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.row a{color:var(--brand);font-weight:700}
+.row .btn{margin-top:0;padding:8px 14px}
+.empty{color:var(--mute);padding:20px;text-align:center}
+.note{font-size:13px;color:var(--mute);margin-top:24px}
+details summary{cursor:pointer;font-weight:700;margin-top:6px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>ScholarSaathi</h1>
+  <p class="tag">Tell us about yourself once. See which scholarships you qualify for, and why.</p>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" id="t1" aria-selected="true">Find scholarships</button>
+    <button role="tab" id="t2" aria-selected="false">Saved &amp; deadlines (<span id="cnt">0</span>)</button>
+  </div>
+
+  <section id="find">
+    <form class="panel" id="pf" onsubmit="return false">
+      <h2>Your profile</h2>
+      <div class="grid">
+        <label>Name<input id="name" autocomplete="name"></label>
+        <label>Course<select id="course"><option>B.E./B.Tech</option><option>Diploma (Engineering)</option><option>B.Sc</option><option>B.A./B.Com</option><option>Post-graduation</option></select></label>
+        <label>State<input id="state" placeholder="e.g. Punjab"></label>
+        <label>Gender<select id="gender"><option value="male">Male</option><option value="female">Female</option><option value="other">Other</option></select></label>
+        <label>Category<select id="cat"><option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>EWS</option></select></label>
+        <label>Family income (₹ lakh / year)<input id="inc" type="number" min="0" step="0.1" value="3"></label>
+        <label>Last exam marks (%)<input id="marks" type="number" min="0" max="100" value="75"></label>
+        <label>Minority community<select id="min"><option value="no">No</option><option value="yes">Yes</option></select></label>
+        <label>Person with 40%+ disability<select id="dis"><option value="no">No</option><option value="yes">Yes</option></select></label>
+        <label>Year of study<select id="year"><option value="1">1st year</option><option value="2L">2nd year (lateral entry)</option><option value="2">2nd year</option><option value="3">3rd year</option><option value="4">4th year</option></select></label>
+        <label>Top 20 percentile in Class 12 board?<select id="top"><option value="no">No / not sure</option><option value="yes">Yes</option></select></label>
+      </div>
+      <button class="btn" id="saveP">Save profile and check eligibility</button>
+    </form>
+
+    <div class="panel">
+      <div class="grid" style="margin-top:0">
+        <label>Search<input id="q" placeholder="Name or provider"></label>
+        <label>Show<select id="flt"><option value="all">All scholarships</option><option value="ok">Only ones I qualify for</option><option value="open">Only ones still open</option></select></label>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+    <div id="list"></div>
+  </section>
+
+  <section id="saved" hidden>
+    <div class="panel"><h2>Your shortlist</h2><p class="meta">Add the date you plan to apply by. The portal’s official last date can change every year, so always confirm it on the official site.</p></div>
+    <div id="slist"></div>
+  </section>
+
+  <p class="note">Rules and dates were checked on 21 Nov 2026 against NSP and public notices. Schemes change every year, so confirm on the official portal before applying. Only schemes we could verify are listed.</p>
+</div>
+
+<script>
+// ---------- DATA (edit this list to add scholarships) ----------
+const DATA=[
+{id:"pragati",name:"AICTE Pragati Scholarship for Girls",by:"AICTE · via NSP",amt:"₹50,000 / year",courses:["B.E./B.Tech","Diploma (Engineering)"],gender:"female",years:["1","2L"],maxInc:8,minMarks:0,link:"https://scholarships.gov.in",note:"Girl students admitted to 1st year (or 2nd year through lateral entry) of an AICTE-approved technical degree or diploma. Family income below ₹8 lakh. Maximum two girl children per family.",end:"2026-10-31",win:"Closed. Last date was 31 Oct 2026 (verification till 30 Nov 2026).",src:"NSP / AICTE notice as reported by Buddy4Study, FindMyCollege"},
+{id:"saksham",name:"AICTE Saksham Scholarship",by:"AICTE · via NSP",amt:"₹50,000 / year",courses:["B.E./B.Tech","Diploma (Engineering)"],disability:true,maxInc:8,minMarks:0,link:"https://scholarships.gov.in",note:"Students with at least 40% disability in AICTE-approved technical courses. Family income up to ₹8 lakh. Lasts 24 months or the course duration, whichever is shorter.",end:"2026-10-31",win:"2026-27 cycle reported with a 31 Oct 2026 last date. Confirm on NSP.",src:"AICTE circular as reported by SchemesInIndia, IndiaScholarships"},
+{id:"csss",name:"PM-USP Central Sector Scholarship (CSSS)",by:"Ministry of Education · via NSP",amt:"₹12,000 / year (UG), ₹20,000 / year (PG)",courses:["B.E./B.Tech","B.Sc","B.A./B.Com","Post-graduation"],top20:true,maxInc:4.5,minMarks:0,link:"https://scholarships.gov.in",note:"For regular UG/PG students who were in the top 20 percentile of their Class 12 board. Income limit is ₹4.5 lakh in the scheme description; one 2026-27 article says ₹8 lakh, so check the NSP guidelines.",end:"2026-10-31",win:"NSP shows 31 Oct 2026 as the student last date for renewals. Fresh-application date was not clear in the sources.",src:"NSP homepage, myScheme (Govt. of India)"}
+];
+
+// ---------- STORAGE ----------
+const store={get(k,d){try{return JSON.parse(localStorage.getItem(k))??d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let profile=store.get("ss_profile",null), saved=store.get("ss_saved",{}); // saved: {id: "yyyy-mm-dd" or ""}
+const $=id=>document.getElementById(id);
+const ids=["name","course","state","gender","cat","inc","marks","min","dis","year","top"];
+
+// ---------- ELIGIBILITY ENGINE ----------
+function check(s,p){
+  const bad=[];
+  if(!p) return {ok:null,bad:["Fill in your profile to check eligibility."]};
+  if(s.courses&&!s.courses.includes(p.course)) bad.push("Not open for "+p.course);
+  if(s.gender&&p.gender!==s.gender) bad.push("Only for "+s.gender+" students");
+  if(s.cats&&!s.cats.includes(p.cat)) bad.push("Only for "+s.cats.join("/")+" category");
+  if(s.minority&&p.min!=="yes") bad.push("Only for minority communities");
+  if(s.disability&&p.dis!=="yes") bad.push("Only for students with disabilities");
+  if(s.years&&!s.years.includes(p.year)) bad.push("Only for 1st-year (or lateral-entry 2nd-year) students");
+  if(s.top20&&p.top!=="yes") bad.push("Needs a top-20-percentile Class 12 score");
+  if(+p.inc>s.maxInc) bad.push("Income above ₹"+s.maxInc+" lakh limit");
+  if(+p.marks<s.minMarks) bad.push("Needs at least "+s.minMarks+"% marks");
+  return {ok:bad.length===0,bad};
+}
+
+function docs(s){const d=["Aadhaar card","Aadhaar-linked bank passbook","Latest marksheet","Income certificate","College bonafide / fee receipt","Passport-size photo"];if(s.cats)d.push("Caste certificate");if(s.minority)d.push("Minority community declaration");if(s.disability)d.push("Disability certificate (UDID)");return d}
+// ---------- RENDER ----------
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function isOpen(s){return !s.end||new Date(s.end+"T23:59:59")>=new Date()}
+function renderFind(){
+  const q=$("q").value.toLowerCase(), f=$("flt").value;
+  const rows=DATA.map(s=>({s,r:check(s,profile)})).filter(x=>(x.s.name+x.s.by).toLowerCase().includes(q)&&(f==="all"||(f==="ok"&&x.r.ok)||(f==="open"&&isOpen(x.s))));
+  rows.sort((a,b)=>(b.r.ok===true)-(a.r.ok===true));
+  const n=DATA.filter(s=>check(s,profile).ok).length;
+  $("stats").innerHTML=profile?`<span class="stat">${n} of ${DATA.length} match ${esc(profile.name||"your")} profile</span>`:`<span class="badge warn">Save your profile to see matches</span>`;
+  $("list").innerHTML=rows.length?rows.map(({s,r})=>{
+    const cls=r.ok===true?"ok":r.ok===false?"no":"";
+    const badge=r.ok===true?'<span class="badge ok">You may be eligible</span>':r.ok===false?'<span class="badge no">Not matching yet</span>':'<span class="badge warn">Profile needed</span>';
+    const isS=s.id in saved;
+    return `<article class="panel sch ${cls}"><h3>${esc(s.name)}</h3><div class="meta">${esc(s.by)} · ${esc(s.amt)}</div>${badge} ${isOpen(s)?'<span class="badge ok">Applications open</span>':'<span class="badge no">2026-27 window closed</span>'}
+    <p class="why">${esc(s.note)}</p><p class="why"><b>2026-27 window:</b> ${esc(s.win)}<br>Checked 21 Nov 2026 · Source: ${esc(s.src)}</p>
+    ${r.ok===false?`<details><summary>Why not?</summary><ul>${r.bad.map(b=>"<li>"+esc(b)+"</li>").join("")}</ul></details>`:""}
+    <details><summary>Documents to keep ready</summary><ul>${docs(s).map(b=>"<li>"+esc(b)+"</li>").join("")}</ul><p class="why">Typical list. Check the official notice for the exact one.</p></details><div class="row"><button class="btn ${isS?"ghost":""}" data-save="${s.id}">${isS?"Remove from shortlist":"Save to shortlist"}</button><a href="${s.link}" target="_blank" rel="noopener">Official site</a></div></article>`}).join(""):'<div class="empty">No scholarships match. Try clearing the search or changing the filter.</div>';
+}
+function daysLeft(d){if(!d)return null;const t=new Date(d+"T00:00:00"),n=new Date();n.setHours(0,0,0,0);return Math.round((t-n)/864e5)}
+function renderSaved(){
+  const items=Object.keys(saved).map(id=>({s:DATA.find(x=>x.id===id),d:saved[id]})).filter(x=>x.s);
+  $("cnt").textContent=items.length;
+  items.sort((a,b)=>(a.d||"9999").localeCompare(b.d||"9999"));
+  $("slist").innerHTML=items.length?items.map(({s,d})=>{
+    const n=daysLeft(d);
+    const chip=n===null?'<span class="badge warn">No date set</span>':n<0?'<span class="badge no">Date passed</span>':n<=7?`<span class="badge warn">${n} day${n===1?"":"s"} left</span>`:`<span class="badge ok">${n} days left</span>`;
+    return `<article class="panel"><h3 style="margin:0">${esc(s.name)}</h3><div class="meta">${esc(s.by)} · ${esc(s.amt)}</div>${chip}
+    <div class="row"><label style="flex:1;min-width:180px">Apply by<input type="date" data-date="${s.id}" value="${d||""}"></label><button class="btn ghost" data-save="${s.id}">Remove</button><a href="${s.link}" target="_blank" rel="noopener">Official site</a></div></article>`}).join(""):'<div class="empty">Nothing saved yet. Save scholarships from the Find tab to track them here.</div>';
+}
+function renderAll(){renderFind();renderSaved()}
+
+// ---------- EVENTS ----------
+$("saveP").onclick=()=>{profile={};ids.forEach(i=>profile[i]=$(i).value);store.set("ss_profile",profile);renderAll();$("list").scrollIntoView({behavior:"smooth"})};
+["q","flt"].forEach(i=>$(i).addEventListener("input",renderFind));
+document.addEventListener("click",e=>{const id=e.target.dataset&&e.target.dataset.save;if(!id)return;if(id in saved)delete saved[id];else saved[id]="";store.set("ss_saved",saved);renderAll()});
+document.addEventListener("change",e=>{const id=e.target.dataset&&e.target.dataset.date;if(!id)return;saved[id]=e.target.value;store.set("ss_saved",saved);renderSaved()});
+function tab(n){$("find").hidden=n!==1;$("saved").hidden=n!==2;$("t1").setAttribute("aria-selected",n===1);$("t2").setAttribute("aria-selected",n===2)}
+$("t1").onclick=()=>tab(1);$("t2").onclick=()=>tab(2);
+if(profile)ids.forEach(i=>{if(profile[i]!==undefined)$(i).value=profile[i]});
+renderAll();
+</script>
+</body>
+</html>
